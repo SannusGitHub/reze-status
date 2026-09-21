@@ -1,0 +1,16 @@
+server-name: "reze (home-server)"
+server-image: "/src/img/reze.png"
+port: "6969"
+corsheader: "*"
+refresh-interval: "5m"
+return-only-running: true
+servers:
+  - name: "Minecraft"
+    method: systemd
+    unit: minecraft.service
+  - name: "7 Days to Die"
+    method: process
+    match: "7DaysToDieServer.x86_64"
+  - name: "home-server"
+    method: port
+    port: 1759
