@@ -46,7 +46,8 @@ Run the project by doing either of the commands:
 ```
 go run main.go
 ```
-    or, after building:
+
+...or, after building:
 ```
 ./reze-status
 ```
