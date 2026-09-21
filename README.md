@@ -4,7 +4,7 @@
 "reze-status" is a small server I made during my spare free time which lets me fetch basic information about 
 other servers running on my homelab machine (aptly titled 'reze'. sue me, I like Chainsaw Man and Reze).
 
-# ...Why?
+## ...Why?
 Because I want to. I like making things, and I wanted a personal server tracking system with my own spice as
 well as comfort added to it.
 
