@@ -122,12 +122,13 @@ func fetchServerInformation() ServerReport {
 			}
 
 		case "port":
-			conn, err := net.Dial("tcp", "127.0.0.1:"+s.Port)
+			ln, err := net.Listen("tcp", "127.0.0.1:"+s.Port)
 			if err != nil {
-				isFound = false
-			} else {
 				isFound = true
-				conn.Close()
+			} else {
+				fmt.Printf("'%s' failed check status with err: %v\n", s.Name, "port is free")
+				ln.Close()
+				isFound = false
 			}
 		}
 

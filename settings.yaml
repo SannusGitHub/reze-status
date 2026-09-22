@@ -8,7 +8,7 @@ servers:
   - name: "Minecraft"
     method: systemd
     unit: minecraft.service
-  - name: "7 Days to Die"
+  - name: "7 Days to Die: Undead Legacy"
     method: process
     match: "7DaysToDieServer.x86_64"
   - name: "home-server"
