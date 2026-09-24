@@ -14,6 +14,7 @@ This program includes the following features:
     * server-image
     * port
     * corsheader
+    * internalauth
     * refresh-interval
     * return-only-running
 * Assigning "servers" to detect running on the machine using a variety of different parameters:

@@ -2,7 +2,7 @@ server-name: "reze (home-server)"
 server-image: "/src/img/reze.png"
 port: "6969"
 corsheader: "*"
-internalauth: "example-change-later"
+internalauth: "4t2@.a51j:u)s=n|yg9^vio!>k,7*-f0c~rwz6?<bme3#/;q$+%8&h_xp(d"
 refresh-interval: "5m"
 return-only-running: true
 servers:
