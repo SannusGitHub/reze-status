@@ -28,6 +28,7 @@ type Config struct {
 	ServerName        string       `yaml:"server-name"`
 	ServerImage       string       `yaml:"server-image"`
 	CorsHeader        string       `yaml:"corsheader"`
+	InternalAuth      string       `yaml:"internalauth"`
 	Port              string       `yaml:"port"`
 	RefreshInterval   string       `yaml:"refresh-interval"`
 	ReturnOnlyRunning bool         `yaml:"return-only-running"`
@@ -178,9 +179,18 @@ func main() {
 		corsHeader = "*"
 	}
 
-	stats := func(w http.ResponseWriter, _ *http.Request) {
+	stats := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", corsHeader)
 		w.Header().Set("Content-Type", "application/json")
+
+		if cfg.InternalAuth == "" {
+			fmt.Printf("warning: internal auth key has not been set, defaulting to not checking for header auth!\n")
+		}
+
+		if (cfg.InternalAuth != "") && (r.Header.Get("X-Internal-Auth") != cfg.InternalAuth) {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
 
 		report := cache.Get()
 		w.Header().Set("Content-Type", "application/json")
