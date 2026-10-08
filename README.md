@@ -20,8 +20,9 @@ This program includes the following features:
 * Assigning "servers" to detect running on the machine using a variety of different parameters:
     * name (relayed to the front-end)
     * method ("systemd", "process" & "port" check)
-    * unit (used with "systemd" method )
+    * unit (used with "systemd" method)
     * match (used with "process" method, supports full path & executable name)
+    * ip (used with "port" method, optional)
     * port (used with "port" method)
 * Returning following information about running server instances to the front-end:
     * server_name

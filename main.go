@@ -21,6 +21,7 @@ type ServerInfo struct {
 	Method string `yaml:"method"`
 	Unit   string `yaml:"unit"`
 	Match  string `yaml:"match"`
+	Ip     string `yaml:"ip"`
 	Port   string `yaml:"port"`
 }
 
@@ -123,13 +124,19 @@ func fetchServerInformation() ServerReport {
 			}
 
 		case "port":
-			ln, err := net.Listen("tcp", "127.0.0.1:"+s.Port)
+			host := s.Ip
+			if host == "" {
+				host = "127.0.0.1"
+			}
+
+			addr := net.JoinHostPort(host, s.Port)
+			conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
 			if err != nil {
-				isFound = true
-			} else {
-				fmt.Printf("'%s' failed check status with err: %v\n", s.Name, "port is free")
-				ln.Close()
+				fmt.Printf("'%s' failed check status with err: %v\n", s.Name, err)
 				isFound = false
+			} else {
+				conn.Close()
+				isFound = true
 			}
 		}
 
