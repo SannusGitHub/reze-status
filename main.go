@@ -43,9 +43,11 @@ type ServerStatus struct {
 	Running bool   `json:"running"`
 }
 
+/* return struct: what's sent to front-end */
 type ServerReport struct {
 	ServerName   string         `json:"server_name"`
 	ServerImage  string         `json:"server_image"`
+	ServerUptime int64          `json:"server_uptime"`
 	RunningCount int            `json:"running_count"`
 	TotalCount   int            `json:"total_count"`
 	Servers      []ServerStatus `json:"servers"`
@@ -81,6 +83,12 @@ func startCacheRefresher(interval time.Duration) {
 	}()
 }
 
+var startTime time.Time
+
+func uptime() time.Duration {
+	return time.Since(startTime)
+}
+
 func fetchServerInformation() ServerReport {
 	var results []ServerStatus
 
@@ -111,15 +119,23 @@ func fetchServerInformation() ServerReport {
 			}
 
 			for _, p := range procs {
-				cwd, err := p.Cwd()
+				exe, err := p.Exe()
+				if err == nil && exe == absolutePath {
+					isFound = true
+					break
+				}
+
+				name, err := p.Name()
 				if err != nil {
 					continue
 				}
-				exe, _ := p.Exe()
 
-				if cwd == filepath.Dir(absolutePath) || exe == absolutePath {
-					isFound = true
-					break
+				if name == filepath.Base(absolutePath) {
+					cwd, err := p.Cwd()
+					if err == nil && cwd == filepath.Dir(absolutePath) {
+						isFound = true
+						break
+					}
 				}
 			}
 
@@ -145,6 +161,7 @@ func fetchServerInformation() ServerReport {
 		}
 	}
 
+	/* fetch how many servers are running currently */
 	runningCount := 0
 	for _, r := range results {
 		if r.Running {
@@ -152,13 +169,23 @@ func fetchServerInformation() ServerReport {
 		}
 	}
 
+	/* return info */
+	serverName := cfg.ServerName
+	/* image is handled separately with http Handle func "/api/logo" */
+	serverUptime := uptime()
+
 	return ServerReport{
-		ServerName:   cfg.ServerName,
+		ServerName:   serverName,
 		ServerImage:  cfg.ServerImage,
+		ServerUptime: int64(serverUptime),
 		RunningCount: runningCount,
 		TotalCount:   len(results),
 		Servers:      results,
 	}
+}
+
+func init() {
+	startTime = time.Now()
 }
 
 func main() {
@@ -210,7 +237,13 @@ func main() {
 
 		w.Write(jsonBytes)
 	}
+
+	// handle logo API & the rest
+	http.HandleFunc("/api/logo.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, cfg.ServerImage)
+	})
 	http.HandleFunc("/api/running-servers", stats)
+
 	fmt.Printf("started reze-tracker service on port :%s\n", cfg.Port)
 	http.ListenAndServe(":"+cfg.Port, nil)
 }
