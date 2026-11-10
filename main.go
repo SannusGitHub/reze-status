@@ -145,7 +145,12 @@ func fetchServerInformation() ServerReport {
 				host = "127.0.0.1"
 			}
 
-			addr := net.JoinHostPort(host, s.Port)
+			port := s.Port
+			if port == "" {
+				port = s.Match
+			}
+
+			addr := net.JoinHostPort(host, port)
 			conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
 			if err != nil {
 				fmt.Printf("'%s' failed check status with err: %v\n", s.Name, err)
